@@ -1,0 +1,86 @@
+CREATE TABLE analyse(
+   id_analyse INT,
+   name_analyse VARCHAR(255) UNIQUE NOT NULL,
+   PRIMARY KEY(id_analyse)
+);
+
+CREATE TABLE dataset(
+   id_dataset INT,
+   name_dataset VARCHAR(255) UNIQUE NOT NULL,
+   path_dataset VARCHAR(255) UNIQUE NOT NULL,
+   id_analyse INT,
+   PRIMARY KEY(id_dataset),
+   FOREIGN KEY(id_analyse) REFERENCES analyse(id_analyse)
+);
+
+CREATE TABLE model(
+   id_model INT,
+   name_model VARCHAR(255) UNIQUE NOT NULL,
+   path_model VARCHAR(255) UNIQUE NOT NULL,
+   id_dataset INT NOT NULL,
+   PRIMARY KEY(id_model),
+   FOREIGN KEY(id_dataset) REFERENCES dataset(id_dataset)
+);
+
+CREATE TABLE personne(
+   id_personne INT NOT NULL AUTO_INCREMENT,
+   cuid VARCHAR(50),
+   id_analyse INT NOT NULL,
+   id_model INT NOT NULL,
+   auto_update_photo INT(1) NOT NULL DEFAULT 1,
+   PRIMARY KEY(id_personne),
+   UNIQUE(cuid),
+   FOREIGN KEY(id_analyse) REFERENCES analyse(id_analyse),
+   FOREIGN KEY(id_model) REFERENCES model(id_model)
+);
+
+CREATE TABLE photo(
+   id_photo INT NOT NULL AUTO_INCREMENT,
+   path_photo VARCHAR(300),
+   name_photo VARCHAR(255),
+   date_photo DATETIME,
+   est_choisi INT(1) NOT NULL DEFAULT 0,
+   id_personne INT NOT NULL,
+   PRIMARY KEY(id_photo),
+   UNIQUE(name_photo),
+   FOREIGN KEY(id_personne) REFERENCES personne(id_personne)
+);
+
+CREATE TABLE traitement(
+   id_traitement INT NOT NULL AUTO_INCREMENT,
+   est_analyse INT(1) NOT NULL DEFAULT 0,
+   traitement_fini INT(1) NOT NULL DEFAULT 0,
+   est_choisi INT(1) NOT NULL DEFAULT 0,
+   total INT,
+   note DECIMAL(3,2),
+   id_photo INT NOT NULL,
+   id_analyse INT NOT NULL,
+   id_model INT NOT NULL,
+   PRIMARY KEY(id_traitement),
+   FOREIGN KEY(id_photo) REFERENCES photo(id_photo),
+   FOREIGN KEY(id_analyse) REFERENCES analyse(id_analyse),
+   FOREIGN KEY(id_model) REFERENCES model(id_model)
+);
+
+CREATE TABLE piece(
+   id_piece INT NOT NULL AUTO_INCREMENT,
+   est_une_piece INT(1) NOT NULL DEFAULT 1,
+   valeur_analyse INT,
+   valeur_reelle INT,
+   x INT,
+   y INT,
+   r DECIMAL(15,2),
+   id_traitement INT NOT NULL,
+   PRIMARY KEY(id_piece),
+   FOREIGN KEY(id_traitement) REFERENCES traitement(id_traitement)
+);
+
+DROP TABLE piece;
+DROP TABLE traitement;
+DROP TABLE photo;
+DROP TABLE personne;
+DROP TABLE model;
+DROP TABLE dataset;
+DROP TABLE analyse;
+
+
